@@ -49,6 +49,7 @@ clear train_data;                                   %   Release raw training dat
 test_data=load(TestingData_File);
 TV.T=test_data(:,1)';
 TV.P=test_data(:,2:size(test_data,2))';
+
 clear test_data;                                    %   Release raw testing data array
 
 C = Regularization_coefficient;

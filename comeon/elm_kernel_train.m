@@ -36,7 +36,7 @@ function [ELM_Kernel_Model] = elm_kernel_train(TrainingData, TestingData, Elm_Ty
     %%%%    DATE:       MARCH 2012
 
 %训练模型
-ELM_Kernel_Model = cell(6,1);
+ELM_Kernel_Model = cell(11,1);
 
 %%%%%%%%%%% 模型类型
 REGRESSION=0; %回归问题
@@ -154,7 +154,6 @@ ELM_Kernel_Model{4, 1} = Regularization_coefficient;
 ELM_Kernel_Model{5, 1} = Elm_Type;
 ELM_Kernel_Model{6, 1} = TrainingData;
 ELM_Kernel_Model{7, 1} = TestingData;  
-
 ELM_Kernel_Model{8, 1} = TrainingTime;  
 ELM_Kernel_Model{9, 1} = TestingTime;  
 ELM_Kernel_Model{10, 1} = TrainingAccuracy;  

@@ -33,7 +33,7 @@ P_train=[T_train,P_train]; % 最终训练集
 P_test=[T_test,P_test]; % 最终测试集
 
 %===========================================
-classernum=5;
+classernum=20;
 RF_Model=cell(classernum,5);
 
 for i=1:classernum
@@ -113,15 +113,17 @@ for i=2:classernum
     end
 end
 
+rand
+
 %% 测试阶段
 rfc=0;
-for i=1:size(P_test,1)
-    item=P_test(i,:);
+for i=1:length(P_test)
+    item=tset(i,:);
     right=0;
     fail=0;
     for j=1:classernum
-        ELM_Kernel_Model=RF_Model{j,5};
-        [TestingTime, TestingAccuracy] = elm_kernel_predict(item,ELM_Kernel_Model);
+        ELM_Kernel_Model=rfmodel{j,5};
+        [TestingTime, TestingAccuracy] = elm_kernel_predict(item,label, ELM_Kernel_Model);
         if TestingAccuracy==1
             right=right+1;
         else
@@ -131,17 +133,14 @@ for i=1:size(P_test,1)
     if right>=fail
         rfc=rfc+1;
     end
+    
 end
 
-finalresult=rfc/size(P_test,1);
+finalresult=rfc/size(tset,1);
 
 
-bestc = pso_mkelm(P_train);
-C=bestc(1,1); % 正则化系数
-rbf_para=bestc(1,2);
-poly_para=bestc(1,3);
-b_para=bestc(1,4);
-ELM_Kernel_Model = elm_kernel_train(P_train, P_test, 1, C, 'RBF_kernel', [rbf_para;poly_para;b_para]);
+[TrainingTime, TrainingAccuracy, ELM_Kernel_Model] = elm_kernel_train(train_matrix,label,1, 100, 'RBF_kernel', 20);
+[TestingTime, TestingAccuracy] = elm_kernel_predict(tset,label, ELM_Kernel_Model)
 
 
 

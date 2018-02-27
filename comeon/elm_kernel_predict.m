@@ -54,6 +54,7 @@ clear test_data;
 %C = Regularization_coefficient; % 正则化系数
 NumberofTrainingData=size(P,2); % 训练样本个数
 NumberofTestingData=size(TV.P,2);% 测试样本个数
+Elm_Type=ELM_Kernel_Model{5, 1};
 
 if Elm_Type~=REGRESSION % 分类
     %%%%%%%%%%%% 类别数据的预处理
@@ -98,8 +99,8 @@ end
 
 OutputWeight=ELM_Kernel_Model{1,1}; 
 Kernel_type=ELM_Kernel_Model{2, 1};
-Kernel_para=ELM_Kernel_Model{3, 1}
-Elm_Type=ELM_Kernel_Model{5, 1}
+Kernel_para=ELM_Kernel_Model{3, 1};
+
 tic;
 Omega_test = kernel_matrix(P',Kernel_type,Kernel_para,TV.P');
 TY=(Omega_test' * OutputWeight)';                            %   TY: the actual output of the testing data

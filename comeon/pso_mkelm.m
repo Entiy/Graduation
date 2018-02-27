@@ -1,7 +1,6 @@
-function PSO_ELM_Kernel_Model=improveBase(TrainingData,TestingData)
+function bestc=pso_mkelm(TrainingData)
 
 P_train=TrainingData;
-P_test=TestingData;
 
 % c1,c2学习因子，通常c1=c2=2
 c1 = 2; 
@@ -62,25 +61,25 @@ for i=1:sizepop
     poly_para=pop(i,3); % poly参数
     b_para=pop(i,4); %混合核权重系数
   
-%     [M,N]=size(P_train);   %数据集为一个M*N的矩阵，其中每一行代表一个样本
-%     indices=crossvalind('Kfold',P_train(1:M,N),1);    % 进行随机分包
-%     result=[];
-%     for k=1:1  %交叉验证k=5，5个包轮流作为测试集
-%         test = (indices == k);  %获得test集元素在数据集中对应的单元编号
-%         train = ~test;  %train集元素的编号为非test元素的编号
-%         train_data=P_train(train,:);   %从数据集中划分出train样本的数据   
-%         test_data=P_train(test,:); %test样本集
-%         ELM_Kernel_Model= elm_kernel_train(train_data, test_data, 1, C, 'Mix', [rbf_para;poly_para;b_para]);
-%         result(k,1)=ELM_Kernel_Model{8,1};
-%         result(k,2)=ELM_Kernel_Model{9,1};
-%         result(k,3)=ELM_Kernel_Model{10,1};
-%         result(k,4)=ELM_Kernel_Model{11,1};
-%     end
-%     acc=sum(result(:,4))/size(result,1);
-%     fitness(i) = acc; % 粒子适应度
+    [M,N]=size(P_train);   %数据集为一个M*N的矩阵，其中每一行代表一个样本
+    indices=crossvalind('Kfold',P_train(1:M,N),5);    % 进行随机分包
+    result=[];
+    for k=1:5  %交叉验证k=5，5个包轮流作为测试集
+        test = (indices == k);  %获得test集元素在数据集中对应的单元编号
+        train = ~test;  %train集元素的编号为非test元素的编号
+        train_data=P_train(train,:);   %从数据集中划分出train样本的数据   
+        test_data=P_train(test,:); %test样本集
+        ELM_Kernel_Model= elm_kernel_train(train_data, test_data, 1, C, 'RBF_kernel', [rbf_para;poly_para;b_para]);
+        result(k,1)=ELM_Kernel_Model{8,1};
+        result(k,2)=ELM_Kernel_Model{9,1};
+        result(k,3)=ELM_Kernel_Model{10,1};
+        result(k,4)=ELM_Kernel_Model{11,1};
+    end
+    acc=sum(result(:,4))/size(result,1);
+    fitness(i) = acc; % 粒子适应度
     
-    ELM_Kernel_Model = elm_kernel_train(P_train, P_test, 1, C, 'Mix', [rbf_para;poly_para;b_para]);
-    fitness(i) = ELM_Kernel_Model{11,1}; % 粒子适应度
+    %ELM_Kernel_Model = elm_kernel_train(P_train, P_test, 1, C, 'Mix', [rbf_para;poly_para;b_para]);
+    %fitness(i) = ELM_Kernel_Model{11,1}; % 粒子适应度
 end
 
 % 找极值和极值点
@@ -89,9 +88,6 @@ local_fitness=fitness;   % 个体极值初始化
 
 global_x=pop(bestindex,:);   % 全局极值点坐标
 local_x=pop;    % 个体极值点坐标
-%point_all=pop;
-best_model=ELM_Kernel_Model;
-
 tic
 
 %% 迭代寻优
@@ -185,25 +181,26 @@ for i=1:maxgen
          poly_para=pop(j,3); % poly参数
          b_para=pop(j,4); %混合核权重系数
   
-%          [M,N]=size(P_train);   %数据集为一个M*N的矩阵，其中每一行代表一个样本
-%          indices=crossvalind('Kfold',P_train(1:M,N),1);    % 进行随机分包
-%          result=[];
-%          for k=1:1  %交叉验证k=5，5个包轮流作为测试集
-%             test = (indices == k);  %获得test集元素在数据集中对应的单元编号
-%             train = ~test;  %train集元素的编号为非test元素的编号
-%             train_data=P_train(train,:);   %从数据集中划分出train样本的数据   
-%             test_data=P_train(test,:); %test样本集
-%             ELM_Kernel_Model = elm_kernel_train(train_data, test_data, 1, C, 'Mix', [rbf_para;poly_para;b_para]);
-%             result(k,1)=ELM_Kernel_Model{8,1};
-%             result(k,2)=ELM_Kernel_Model{9,1};
-%             result(k,3)=ELM_Kernel_Model{10,1};
-%             result(k,4)=ELM_Kernel_Model{11,1};
-%          end
-%          acc=sum(result(:,4))/size(result,1);
-%          fitness(j) = acc; % 更新粒子适应度
+         [M,N]=size(P_train);   %数据集为一个M*N的矩阵，其中每一行代表一个样本
+         indices=crossvalind('Kfold',P_train(1:M,N),5);    % 进行随机分包
+         result=[];
+         for k=1:5  %交叉验证k=5，5个包轮流作为测试集
+            test = (indices == k);  %获得test集元素在数据集中对应的单元编号
+            train = ~test;  %train集元素的编号为非test元素的编号
+            train_data=P_train(train,:);   %从数据集中划分出train样本的数据   
+            test_data=P_train(test,:); %test样本集
+            ELM_Kernel_Model = elm_kernel_train(train_data, test_data, 1, C, 'RBF_kernel', [rbf_para;poly_para;b_para]);
+            result(k,1)=ELM_Kernel_Model{8,1};
+            result(k,2)=ELM_Kernel_Model{9,1};
+            result(k,3)=ELM_Kernel_Model{10,1};
+            result(k,4)=ELM_Kernel_Model{11,1};
+         end
+         acc=sum(result(:,4))/size(result,1);
+         
+         fitness(j) = acc; % 更新粒子适应度
 
-        ELM_Kernel_Model = elm_kernel_train(P_train, P_test, 1, C, 'Mix', [rbf_para;poly_para;b_para]);
-        fitness(j) = ELM_Kernel_Model{11,1}; % 粒子适应度
+        %ELM_Kernel_Model = elm_kernel_train(P_train, P_test, 1, C, 'Mix', [rbf_para;poly_para;b_para]);
+        %fitness(j) = ELM_Kernel_Model{11,1}; % 粒子适应度
          
         %个体最优更新
         if fitness(j) > local_fitness(j)
@@ -214,12 +211,9 @@ for i=1:maxgen
         if fitness(j) > global_fitness
             global_x = pop(j,:);
             global_fitness = fitness(j);
-            best_model=ELM_Kernel_Model;
         end
     end
     avg_global_fitness(i)=global_fitness;
-    avg_global_best_model{i}=best_model;
-    avg_global_x(i,:)=[global_x,global_fitness];
 end
 
-PSO_ELM_Kernel_Model=best_model;
+bestc=global_x;
